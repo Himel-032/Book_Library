@@ -12,57 +12,74 @@ struct BookListView: View {
     @StateObject private var bookViewModel = BookViewModel()
     @State private var selectedCategory = "All"
     @State private var isSearching = false
+    @State private var selectedBook: Book?
+    @State private var showDetail = false
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                
-                // Search Bar
-                searchBar
-                
-                // Category Picker
-                categoryPicker
-                
-                // Book List
-                ZStack {
+        VStack(spacing: 0) {
+            // Search Bar
+            searchBar
+            
+            // Category Picker
+            categoryPicker
+            
+            // Book List
+            ZStack {
+                if bookViewModel.isLoading && bookViewModel.books.isEmpty {
+                    loadingView
+                } else {
                     bookList
-                    
-                    // Loading Indicator
-                    if bookViewModel.isLoading {
-                        ProgressView()
-                            .scaleEffect(1.5)
-                            .progressViewStyle(CircularProgressViewStyle(tint: .blue))
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(Color.black.opacity(0.1))
-                    }
                 }
-            }
-            .navigationTitle("Library")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink(destination: FavoritesView()) {
-                        Image(systemName: "heart.fill")
-                            .foregroundColor(.red)
-                    }
-                }
-            }
-            .onAppear {
-                if bookViewModel.books.isEmpty {
-                    bookViewModel.fetchBooks(category: selectedCategory)
-                }
-            }
-            .alert("Error", isPresented: .constant(bookViewModel.errorMessage != nil)) {
-                Button("OK") {
-                    bookViewModel.errorMessage = nil
-                }
-                Button("Retry") {
-                    bookViewModel.fetchBooks(category: selectedCategory)
-                }
-            } message: {
-                Text(bookViewModel.errorMessage ?? "")
             }
         }
+        .navigationTitle("Library")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                NavigationLink(destination: FavoritesView()) {
+                    Image(systemName: "heart.fill")
+                        .foregroundColor(.red)
+                }
+            }
+        }
+        .onAppear {
+            print("📚 BookListView appeared")
+            if bookViewModel.books.isEmpty {
+                print("📚 Fetching books for category: \(selectedCategory)")
+                bookViewModel.fetchBooks(category: selectedCategory == "All" ? "fiction" : selectedCategory)
+            }
+        }
+        .alert("Error", isPresented: .constant(bookViewModel.errorMessage != nil)) {
+            Button("OK") {
+                bookViewModel.errorMessage = nil
+            }
+            Button("Retry") {
+                let apiCategory = selectedCategory == "All" ? "fiction" : selectedCategory
+                bookViewModel.fetchBooks(category: apiCategory)
+            }
+        } message: {
+            Text(bookViewModel.errorMessage ?? "")
+        }
+        // FIXED: Removed 'return' and simplified sheet
+        .sheet(isPresented: $showDetail) {
+            if let book = selectedBook {
+                BookDetailView(book: book, bookViewModel: bookViewModel)
+            }
+        }
+    }
+    
+    // MARK: - Loading View
+    private var loadingView: some View {
+        VStack(spacing: 20) {
+            ProgressView()
+                .scaleEffect(1.5)
+                .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+            
+            Text("Loading books...")
+                .font(.headline)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     // MARK: - Search Bar
@@ -73,8 +90,11 @@ struct BookListView: View {
             
             TextField("Search books...", text: $bookViewModel.searchText)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                .onTapGesture {
-                    isSearching = true
+                .onSubmit {
+                    if !bookViewModel.searchText.isEmpty {
+                        isSearching = true
+                        bookViewModel.searchBooks(query: bookViewModel.searchText)
+                    }
                 }
             
             if !bookViewModel.searchText.isEmpty {
@@ -109,7 +129,11 @@ struct BookListView: View {
     private func categoryButton(_ category: String) -> some View {
         Button(action: {
             selectedCategory = category
-            bookViewModel.fetchBooks(category: category)
+            isSearching = false
+            bookViewModel.clearSearch()
+            let apiCategory = category == "All" ? "fiction" : category
+            print("📚 Category selected: \(category), fetching: \(apiCategory)")
+            bookViewModel.fetchBooks(category: apiCategory)
         }) {
             Text(category)
                 .font(.caption)
@@ -128,34 +152,63 @@ struct BookListView: View {
         let displayBooks = bookViewModel.booksForCurrentMode(isSearching: isSearching)
         
         if displayBooks.isEmpty && !bookViewModel.isLoading {
-            VStack(spacing: 20) {
-                Image(systemName: "book.closed")
-                    .font(.system(size: 60))
-                    .foregroundColor(.gray)
-                
-                Text(isSearching ? "No books found" : "No books available")
-                    .font(.headline)
-                    .foregroundColor(.gray)
-                
-                if isSearching {
-                    Button("Clear Search") {
-                        bookViewModel.clearSearch()
-                        isSearching = false
-                    }
-                    .font(.subheadline)
-                    .foregroundColor(.blue)
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            emptyStateView
         } else {
             List(displayBooks) { book in
                 BookRowView(book: book, bookViewModel: bookViewModel)
                     .listRowInsets(EdgeInsets(top: 4, leading: 12, bottom: 4, trailing: 12))
+                    .onTapGesture {
+                        print("📚 Book tapped: \(book.volumeInfo.title)")
+                        selectedBook = book
+                        print("📚 selectedBook set to: \(selectedBook?.volumeInfo.title ?? "nil")")
+                        showDetail = true
+                        print("📚 showDetail set to: \(showDetail)")
+                    }
             }
             .listStyle(PlainListStyle())
             .refreshable {
-                bookViewModel.fetchBooks(category: selectedCategory)
+                let apiCategory = selectedCategory == "All" ? "fiction" : selectedCategory
+                print("📚 Refreshing with category: \(apiCategory)")
+                bookViewModel.fetchBooks(category: apiCategory)
             }
         }
+    }
+    
+    // MARK: - Empty State View
+    private var emptyStateView: some View {
+        VStack(spacing: 20) {
+            Image(systemName: isSearching ? "magnifyingglass" : "book.closed")
+                .font(.system(size: 60))
+                .foregroundColor(.gray)
+            
+            Text(isSearching ? "No books found" : "No books available")
+                .font(.headline)
+                .foregroundColor(.gray)
+            
+            if isSearching {
+                Button("Clear Search") {
+                    bookViewModel.clearSearch()
+                    isSearching = false
+                }
+                .font(.subheadline)
+                .foregroundColor(.blue)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
+                .background(Color.blue.opacity(0.1))
+                .cornerRadius(8)
+            } else {
+                Button("Refresh") {
+                    let apiCategory = selectedCategory == "All" ? "fiction" : selectedCategory
+                    bookViewModel.fetchBooks(category: apiCategory)
+                }
+                .font(.subheadline)
+                .foregroundColor(.blue)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
+                .background(Color.blue.opacity(0.1))
+                .cornerRadius(8)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
