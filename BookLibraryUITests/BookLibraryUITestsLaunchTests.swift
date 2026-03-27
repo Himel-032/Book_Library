@@ -2,7 +2,7 @@
 //  BookLibraryUITestsLaunchTests.swift
 //  BookLibraryUITests
 //
-//  Created by Himel on 23/2/26.
+//  Created by macos on 24/2/26.
 //
 
 import XCTest
@@ -17,7 +17,6 @@ final class BookLibraryUITestsLaunchTests: XCTestCase {
         continueAfterFailure = false
     }
 
-    @MainActor
     func testLaunch() throws {
         let app = XCUIApplication()
         app.launch()
