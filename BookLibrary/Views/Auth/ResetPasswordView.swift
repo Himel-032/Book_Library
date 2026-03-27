@@ -2,38 +2,39 @@
 //  ResetPasswordView.swift
 //  BookLibrary
 //
-//  Created by Himel on 23/2/26.
+//  Created by Himel on 24/2/26.
 //
+
 //import SwiftUI
 //
 //struct ResetPasswordView: View {
-//    
+//
 //    @Environment(\.dismiss) var dismiss
 //    @ObservedObject var viewModel: AuthViewModel
-//    
+//
 //    @State private var email = ""
-//    
+//
 //    // Toast state
 //    @State private var showToast = false
 //    @State private var toastMessage = ""
-//    
+//
 //    var body: some View {
 //        ZStack {
 //            VStack(spacing: 20) {
-//                
+//
 //                Text("Reset Password")
 //                    .font(.largeTitle)
 //                    .bold()
-//                
+//
 //                TextField("Enter your email", text: $email)
 //                    .textFieldStyle(.roundedBorder)
 //                    .autocapitalization(.none)
-//                
+//
 //                Button("Send Reset Link") {
 //                    resetUserPassword()
 //                }
 //                .buttonStyle(.borderedProminent)
-//                
+//
 //                // Manual back to login button
 //                Button("Back to Login") {
 //                    dismiss()
@@ -41,7 +42,7 @@
 //                .font(.footnote)
 //            }
 //            .padding()
-//            
+//
 //            // Toast (top-right)
 //            if showToast {
 //                VStack {
@@ -53,7 +54,7 @@
 //                            .cornerRadius(10)
 //                    }
 //                    .padding()
-//                    
+//
 //                    Spacer()
 //                }
 //                .transition(.move(edge: .top).combined(with: .opacity))
@@ -61,24 +62,24 @@
 //            }
 //        }
 //    }
-//    
+//
 //    private func resetUserPassword() {
 //        guard !email.isEmpty else {
 //            viewModel.errorMessage = "Please enter your email"
 //            return
 //        }
-//        
+//
 //        viewModel.resetPassword(email: email)
-//        
+//
 //        // Toast message
 //        toastMessage = "Reset link sent to your email"
 //        showToast = true
-//        
+//
 //        // Auto hide toast
 //        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
 //            showToast = false
 //        }
-//        
+//
 //        // Auto go back to login after success
 //        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
 //            dismiss()
@@ -215,3 +216,4 @@ struct ResetPasswordView: View {
         }
     }
 }
+
