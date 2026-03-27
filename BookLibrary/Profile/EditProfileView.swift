@@ -2,39 +2,39 @@
 //  EditProfileView.swift
 //  BookLibrary
 //
-//  Created by Himel on 23/2/26.
+//  Created by macos on 24/2/26.
 //
 
 import SwiftUI
 
 //struct EditProfileView: View {
-//    
+//
 //    @ObservedObject var viewModel: AuthViewModel
 //    @Environment(\.dismiss) var dismiss
-//    
+//
 //    @State private var name = ""
 //    @State private var country = ""
 //    @State private var showMessage = false
 //    @State private var message = ""
-//    
+//
 //    var body: some View {
 //        VStack(spacing: 20) {
-//            
+//
 //            Text("Edit Profile")
 //                .font(.largeTitle)
 //                .bold()
-//            
+//
 //            TextField("Name", text: $name)
 //                .textFieldStyle(.roundedBorder)
-//            
+//
 //            TextField("Country", text: $country)
 //                .textFieldStyle(.roundedBorder)
-//            
+//
 //            Button("Save Changes") {
 //                updateProfile()
 //            }
 //            .buttonStyle(.borderedProminent)
-//            
+//
 //            if showMessage {
 //                Text(message)
 //                    .foregroundColor(.green)
@@ -45,12 +45,12 @@ import SwiftUI
 //            loadCurrentData()
 //        }
 //    }
-//    
+//
 //    private func loadCurrentData() {
 //        name = viewModel.profile?.name ?? ""
 //        country = viewModel.profile?.country ?? ""
 //    }
-//    
+//
 //    private func updateProfile() {
 //        viewModel.updateProfile(name: name, country: country) { success in
 //            if success {
@@ -187,3 +187,4 @@ struct EditProfileView: View {
         }
     }
 }
+

@@ -2,16 +2,16 @@
 //  SignupView.swift
 //  BookLibrary
 //
-//  Created by Himel on 23/2/26.
+//  Created by Himel on 24/2/26.
 //
 
 //import SwiftUI
 //
 //struct SignupView: View {
-//    
+//
 //    @Environment(\.dismiss) var dismiss
 //    @ObservedObject var viewModel: AuthViewModel
-//    
+//
 //    @State private var email = ""
 //    @State private var password = ""
 //    @State private var confirmPassword = ""
@@ -20,17 +20,17 @@
 //    @State private var filteredCountries: [String] = []
 //    @State private var showDropdown = false
 //    @FocusState private var isCountryFocused: Bool
-//    
+//
 //    var body: some View {
 //        VStack(spacing: 20) {
-//            
+//
 //            Text("Create Account")
 //                .font(.largeTitle)
 //                .bold()
 //            TextField("Name", text: $name)
 //                    .textFieldStyle(.roundedBorder)
 //                    .autocapitalization(.none)
-//                        
+//
 //            VStack(alignment: .leading) {
 //
 //                TextField("Country", text: $country)
@@ -68,28 +68,28 @@
 //                    .cornerRadius(8)
 //                }
 //            }
-//          
-//            
+//
+//
 //            TextField("Email", text: $email)
 //                .textFieldStyle(.roundedBorder)
 //                .autocapitalization(.none)
-//            
+//
 //            SecureField("Password", text: $password)
 //                .textFieldStyle(.roundedBorder)
-//            
+//
 //            SecureField("Confirm Password", text: $confirmPassword)
 //                .textFieldStyle(.roundedBorder)
-//            
+//
 //            Button("Sign Up") {
 //                signUpUser()
 //            }
 //            .buttonStyle(.borderedProminent)
-//            
+//
 //            if let error = viewModel.errorMessage {
 //                Text(error)
 //                    .foregroundColor(.red)
 //            }
-//            
+//
 //            Button("Already have an account? Login") {
 //                dismiss()
 //            }
@@ -97,9 +97,9 @@
 //        }
 //        .padding()
 //    }
-//    
+//
 //    private func signUpUser() {
-//            
+//
 //            guard !email.isEmpty,
 //                  !password.isEmpty,
 //                  !name.isEmpty,
@@ -107,12 +107,12 @@
 //                viewModel.errorMessage = "Please fill all fields"
 //                return
 //            }
-//            
+//
 //            guard password == confirmPassword else {
 //                viewModel.errorMessage = "Passwords do not match"
 //                return
 //            }
-//            
+//
 //            viewModel.signUp(
 //                email: email,
 //                password: password,
@@ -120,7 +120,7 @@
 //                country: country
 //            )
 //        }
-//    
+//
 //    private func filterCountries(query: String) {
 //        if query.isEmpty {
 //            filteredCountries = CountryList.countries
@@ -136,49 +136,49 @@
 //import SwiftUI
 //
 //struct SignupView: View {
-//    
+//
 //    @Environment(\.dismiss) var dismiss
 //    @ObservedObject var viewModel: AuthViewModel
-//    
+//
 //    @State private var email = ""
 //    @State private var password = ""
 //    @State private var confirmPassword = ""
 //    @State private var name = ""
 //    @State private var country = ""
-//    
+//
 //    @State private var filteredCountries: [String] = []
 //    @State private var showDropdown = false
 //    @FocusState private var isCountryFocused: Bool
-//    
+//
 //    var body: some View {
 //        VStack {
-//            
+//
 //            Spacer()
-//            
+//
 //            // Header (Consistent Style)
 //            VStack(spacing: 8) {
 //                Text("Create Account")
 //                    .font(.title)
 //                    .fontWeight(.bold)
-//                
+//
 //                Text("Join the library and explore thousands of books")
 //                    .font(.subheadline)
 //                    .foregroundColor(.gray)
 //            }
-//            
+//
 //            Spacer().frame(height: 30)
-//            
+//
 //            // Input Card
 //            VStack(spacing: 16) {
-//                
+//
 //                TextField("Full Name", text: $name)
 //                    .padding()
 //                    .background(Color(.systemGray6))
 //                    .cornerRadius(10)
-//                
+//
 //                // Country with Dropdown
 //                VStack(alignment: .leading) {
-//                    
+//
 //                    TextField("Country", text: $country)
 //                        .padding()
 //                        .background(Color(.systemGray6))
@@ -195,7 +195,7 @@
 //                                showDropdown = false
 //                            }
 //                        }
-//                    
+//
 //                    if showDropdown {
 //                        ScrollView {
 //                            VStack(alignment: .leading, spacing: 8) {
@@ -217,19 +217,19 @@
 //                        .cornerRadius(10)
 //                    }
 //                }
-//                
+//
 //                TextField("Email Address", text: $email)
 //                    .padding()
 //                    .background(Color(.systemGray6))
 //                    .cornerRadius(10)
 //                    .autocapitalization(.none)
 //                    .keyboardType(.emailAddress)
-//                
+//
 //                SecureField("Password", text: $password)
 //                    .padding()
 //                    .background(Color(.systemGray6))
 //                    .cornerRadius(10)
-//                
+//
 //                SecureField("Confirm Password", text: $confirmPassword)
 //                    .padding()
 //                    .background(Color(.systemGray6))
@@ -241,7 +241,7 @@
 //                    .stroke(Color.gray.opacity(0.2), lineWidth: 1)
 //            )
 //            .padding(.horizontal)
-//            
+//
 //            // Sign Up Button
 //            Button(action: signUpUser) {
 //                Text("Sign Up")
@@ -254,7 +254,7 @@
 //            }
 //            .padding(.horizontal)
 //            .padding(.top, 10)
-//            
+//
 //            // Error Message
 //            if let error = viewModel.errorMessage {
 //                Text(error)
@@ -262,19 +262,19 @@
 //                    .font(.footnote)
 //                    .padding(.top, 6)
 //            }
-//            
+//
 //            // Login Redirect
 //            Button("Already have an account? Login") {
 //                dismiss()
 //            }
 //            .font(.footnote)
 //            .padding(.top, 6)
-//            
+//
 //            Spacer()
 //        }
 //        .padding()
 //    }
-//    
+//
 //    // MARK: - Signup Logic
 //    private func signUpUser() {
 //        guard !email.isEmpty,
@@ -284,12 +284,12 @@
 //            viewModel.errorMessage = "Please fill all fields"
 //            return
 //        }
-//        
+//
 //        guard password == confirmPassword else {
 //            viewModel.errorMessage = "Passwords do not match"
 //            return
 //        }
-//        
+//
 //        viewModel.signUp(
 //            email: email,
 //            password: password,
@@ -297,7 +297,7 @@
 //            country: country
 //        )
 //    }
-//    
+//
 //    // MARK: - Country Filter
 //    private func filterCountries(query: String) {
 //        if query.isEmpty {
@@ -529,3 +529,4 @@ struct SignupView: View {
         }
     }
 }
+

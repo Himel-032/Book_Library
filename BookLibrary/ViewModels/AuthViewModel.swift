@@ -2,13 +2,12 @@
 //  AuthViewModel.swift
 //  BookLibrary
 //
-//  Created by Himel on 23/2/26.
+//  Created by Himel on 24/2/26.
 //
 
 import Foundation
 import FirebaseAuth
 import FirebaseFirestore
-
 
 class AuthViewModel: ObservableObject {
     
@@ -22,6 +21,9 @@ class AuthViewModel: ObservableObject {
         self.isAuthenticated = user != nil
 
         if let uid = user?.uid {
+            // Set user in CoreData when app starts with logged in user
+            CoreDataManager.shared.setCurrentUser(userId: uid)
+            print("🔐 CoreData user set on init: \(uid)")
             fetchProfile(uid: uid)
         }
     }
@@ -34,6 +36,11 @@ class AuthViewModel: ObservableObject {
                     self.user = user
                     self.isAuthenticated = true
                     self.errorMessage = nil
+                    
+                    // Set user in CoreData on signup
+                    CoreDataManager.shared.setCurrentUser(userId: user.uid)
+                    print("🔐 CoreData user set on signup: \(user.uid)")
+                    
                     self.fetchProfile(uid: user.uid)
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
@@ -50,6 +57,11 @@ class AuthViewModel: ObservableObject {
                     self.user = user
                     self.isAuthenticated = true
                     self.errorMessage = nil
+                    
+                    // Set user in CoreData on login
+                    CoreDataManager.shared.setCurrentUser(userId: user.uid)
+                    print("🔐 CoreData user set on login: \(user.uid)")
+                    
                     self.fetchProfile(uid: user.uid)
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
@@ -64,7 +76,10 @@ class AuthViewModel: ObservableObject {
                 switch result {
                 case .success:
                     self.errorMessage = "Reset email sent!"
-                    self.errorMessage = nil
+                    // Reset error message after 3 seconds
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                        self.errorMessage = nil
+                    }
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
                 }
@@ -75,8 +90,14 @@ class AuthViewModel: ObservableObject {
     func logout() {
         do {
             try AuthService.shared.logout()
+            
+            // Clear user from CoreData on logout
+            CoreDataManager.shared.clearCurrentUser()
+            print("🔐 CoreData user cleared on logout")
+            
             self.user = nil
             self.isAuthenticated = false
+            self.profile = nil
             self.errorMessage = nil
         } catch {
             self.errorMessage = error.localizedDescription
@@ -104,22 +125,38 @@ class AuthViewModel: ObservableObject {
                         self.errorMessage = error.localizedDescription
                         completion(false)
                     } else {
-                        // VERY IMPORTANT 👇
+                        // Update local profile
                         self.profile?.name = name
                         self.profile?.country = country
+                        
+                        // Show success message
+                        self.errorMessage = "Profile updated successfully!"
+                        
+                        // Clear success message after 2 seconds
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            if self.errorMessage == "Profile updated successfully!" {
+                                self.errorMessage = nil
+                            }
+                        }
+                        
                         completion(true)
                     }
                 }
             }
     }
+    
     func fetchProfile(uid: String) {
         Firestore.firestore()
             .collection("users")
             .document(uid)
             .getDocument { snapshot, error in
+                
+                if let error = error {
+                    print("Error fetching profile: \(error.localizedDescription)")
+                    return
+                }
 
                 if let data = snapshot?.data() {
-
                     let name = data["name"] as? String ?? ""
                     let country = data["country"] as? String ?? ""
                     let email = data["email"] as? String ?? ""
@@ -134,9 +171,19 @@ class AuthViewModel: ObservableObject {
 
                     DispatchQueue.main.async {
                         self.profile = profile
+                        print("👤 Profile loaded for user: \(name)")
                     }
                 }
             }
     }
-   
+    
+    // MARK: - Helper Methods
+    
+    var currentUserId: String {
+        return user?.uid ?? ""
+    }
+    
+    var isLoggedIn: Bool {
+        return user != nil
+    }
 }

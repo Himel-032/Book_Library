@@ -2,46 +2,46 @@
 //  LoginView.swift
 //  BookLibrary
 //
-//  Created by Himel on 23/2/26.
+//  Created by Himel on 24/2/26.
 //
 
 //import SwiftUI
 //
 //struct LoginView: View {
-//    
+//
 //    @StateObject var viewModel = AuthViewModel()
-//    
+//
 //    @State private var email = ""
 //    @State private var password = ""
-//    
+//
 //    var body: some View {
 //        NavigationView {
 //            VStack(spacing: 20) {
-//                
+//
 //                Text("Login")
 //                    .font(.largeTitle)
-//                
+//
 //                TextField("Email", text: $email)
 //                    .textFieldStyle(.roundedBorder)
 //                    .autocapitalization(.none)
-//                
+//
 //                SecureField("Password", text: $password)
 //                    .textFieldStyle(.roundedBorder)
-//                
+//
 //                Button("Login") {
 //                    viewModel.login(email: email, password: password)
 //                }
 //                .buttonStyle(.borderedProminent)
-//                
+//
 //                NavigationLink("Signup", destination: SignupView(viewModel: viewModel))
-//                
+//
 //                NavigationLink("Forgot Password?", destination: ResetPasswordView(viewModel: viewModel))
-//                
+//
 //                if let error = viewModel.errorMessage {
 //                    Text(error)
 //                        .foregroundColor(.red)
 //                }
-//                
+//
 //                NavigationLink(
 //                    destination: HomeView(),
 //                    isActive: $viewModel.isAuthenticated
@@ -56,18 +56,18 @@
 //import SwiftUI
 //
 //struct LoginView: View {
-//    
+//
 //    @StateObject var viewModel = AuthViewModel()
-//    
+//
 //    @State private var email = ""
 //    @State private var password = ""
-//    
+//
 //    var body: some View {
 //        NavigationView {
 //            VStack {
-//                
+//
 //                Spacer()
-//                
+//
 //                // Header
 //                VStack(spacing: 8) {
 //                    Image("book") // <-- Your image asset name
@@ -79,14 +79,14 @@
 //                    Text("Welcome Back")
 //                        .font(.title)
 //                        .fontWeight(.bold)
-//                    
+//
 //                    Text("Sign in to continue to your library")
 //                        .font(.subheadline)
 //                        .foregroundColor(.gray)
 //                }
-//                
+//
 //                Spacer().frame(height: 40)
-//                
+//
 //                // Input Card
 //                VStack(spacing: 16) {
 //                    TextField("Email Address", text: $email)
@@ -95,7 +95,7 @@
 //                        .cornerRadius(10)
 //                        .autocapitalization(.none)
 //                        .keyboardType(.emailAddress)
-//                    
+//
 //                    SecureField("Password", text: $password)
 //                        .padding()
 //                        .background(Color(.systemGray6))
@@ -107,7 +107,7 @@
 //                        .stroke(Color.gray.opacity(0.2), lineWidth: 1)
 //                )
 //                .padding(.horizontal)
-//                
+//
 //                // Login Button
 //                Button(action: {
 //                    viewModel.login(email: email, password: password)
@@ -122,19 +122,19 @@
 //                }
 //                .padding(.horizontal)
 //                .padding(.top, 10)
-//                
+//
 //                // Links
 //                HStack {
 //                    NavigationLink("Create Account", destination: SignupView(viewModel: viewModel))
-//                    
+//
 //                    Spacer()
-//                    
+//
 //                    NavigationLink("Forgot Password?", destination: ResetPasswordView(viewModel: viewModel))
 //                }
 //                .font(.footnote)
 //                .padding(.horizontal)
 //                .padding(.top, 6)
-//                
+//
 //                // Error Message
 //                if let error = viewModel.errorMessage {
 //                    Text(error)
@@ -142,7 +142,7 @@
 //                        .font(.footnote)
 //                        .padding(.top, 10)
 //                }
-//                
+//
 //                // Navigation to Home on success
 //                NavigationLink(
 //                    destination: HomeView(),
@@ -150,7 +150,7 @@
 //                ) {
 //                    EmptyView()
 //                }
-//                
+//
 //                Spacer()
 //            }
 //            .padding()
@@ -278,7 +278,7 @@ struct LoginView: View {
             
             // Navigation to Home on success
             .navigationDestination(isPresented: $viewModel.isAuthenticated) {
-                HomeView()
+                HomeView(viewModel: viewModel)  // ✅ Pass the viewModel
             }
         }
     }
