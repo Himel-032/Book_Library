@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WebKit
 
 struct BookDetailView: View {
     
@@ -13,7 +14,9 @@ struct BookDetailView: View {
     @ObservedObject var bookViewModel: BookViewModel
     @Environment(\.dismiss) var dismiss
     @State private var isFavorite = false
+    @State private var isFinished = false
     @State private var showFullDescription = false
+    @State private var showReader = false
     
     var body: some View {
         ScrollView {
@@ -40,6 +43,14 @@ struct BookDetailView: View {
                             .font(.title2)
                             .foregroundColor(isFavorite ? .red : .gray)
                     }
+                    
+                    // Finished button
+                    Button(action: toggleFinished) {
+                        Image(systemName: isFinished ? "checkmark.circle.fill" : "checkmark.circle")
+                            .font(.title2)
+                            .foregroundColor(isFinished ? .green : .gray)
+                    }
+                    .padding(.leading, 8)
                 }
                 .padding(.horizontal)
                 
@@ -80,6 +91,14 @@ struct BookDetailView: View {
                                 .font(.caption)
                                 .foregroundColor(.gray)
                         }
+                        
+                        // Finished status indicator
+                        if isFinished {
+                            Label("Finished", systemImage: "checkmark.seal.fill")
+                                .font(.caption)
+                                .foregroundColor(.green)
+                                .padding(.top, 4)
+                        }
                     }
                 }
                 .padding(.horizontal)
@@ -87,15 +106,66 @@ struct BookDetailView: View {
                 Divider()
                     .padding(.horizontal)
                 
+                // Read Online Button
+                if let previewLink = book.volumeInfo.previewLink,
+                   let url = URL(string: previewLink) {
+                    VStack(spacing: 12) {
+                        Button(action: {
+                            UIApplication.shared.open(url)
+                        }) {
+                            HStack {
+                                Image(systemName: "book.fill")
+                                    .font(.title2)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Read Online")
+                                        .font(.headline)
+                                    Text("Open in Google Books")
+                                        .font(.caption)
+                                }
+                                Spacer()
+                                Image(systemName: "arrow.up.right.square")
+                                    .font(.title2)
+                            }
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(Color.green)
+                            .cornerRadius(12)
+                        }
+                        
+                        // Preview in App
+                        Button(action: {
+                            showReader = true
+                        }) {
+                            HStack {
+                                Image(systemName: "doc.text.magnifyingglass")
+                                    .font(.title2)
+                                Text("Preview in App")
+                                    .font(.headline)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.title2)
+                            }
+                            .foregroundColor(.blue)
+                            .padding()
+                            .background(Color.blue.opacity(0.1))
+                            .cornerRadius(12)
+                        }
+                    }
+                    .padding(.horizontal)
+                    
+                    Divider()
+                        .padding(.horizontal)
+                }
+                
                 // Categories
-                if !book.volumeInfo.categoryList.isEmpty {
+                if let categories = book.volumeInfo.categories, !categories.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Categories")
                             .font(.headline)
                         
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack {
-                                ForEach(book.volumeInfo.categories ?? [], id: \.self) { category in
+                                ForEach(categories, id: \.self) { category in
                                     Text(category)
                                         .font(.caption)
                                         .padding(.horizontal, 10)
@@ -143,18 +213,6 @@ struct BookDetailView: View {
                     if let language = book.volumeInfo.language {
                         infoRow(label: "Language", value: language.uppercased())
                     }
-                    
-                    if let previewLink = book.volumeInfo.previewLink,
-                       let url = URL(string: previewLink) {
-                        Link(destination: url) {
-                            HStack {
-                                Text("Preview on Google Books")
-                                Image(systemName: "arrow.up.right.square")
-                            }
-                            .font(.subheadline)
-                            .foregroundColor(.blue)
-                        }
-                    }
                 }
                 .padding(.horizontal)
                 
@@ -164,6 +222,10 @@ struct BookDetailView: View {
         }
         .onAppear {
             checkFavoriteStatus()
+            checkFinishedStatus()
+        }
+        .sheet(isPresented: $showReader) {
+            BookPreviewWebView(book: book)
         }
     }
     
@@ -171,15 +233,44 @@ struct BookDetailView: View {
     @ViewBuilder
     private var bookThumbnail: some View {
         if let thumbnailUrl = book.volumeInfo.thumbnailUrl {
-            AsyncImageLoader(url: thumbnailUrl, placeholder: Image(systemName: "book.closed"))
+            AsyncImage(url: thumbnailUrl) { phase in
+                switch phase {
+                case .empty:
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(width: 120, height: 160)
+                        .overlay(
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        )
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 120, height: 160)
+                        .clipped()
+                case .failure:
+                    fallbackImage
+                @unknown default:
+                    fallbackImage
+                }
+            }
         } else {
+            fallbackImage
+        }
+    }
+    
+    private var fallbackImage: some View {
+        ZStack {
+            Rectangle()
+                .fill(Color.gray.opacity(0.2))
+                .frame(width: 120, height: 160)
+            
             Image(systemName: "book.closed")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 80, height: 120)
+                .frame(width: 50, height: 70)
                 .foregroundColor(.gray)
-                .padding(20)
-                .background(Color.gray.opacity(0.1))
         }
     }
     
@@ -200,13 +291,94 @@ struct BookDetailView: View {
         isFavorite.toggle()
         _ = CoreDataManager.shared.toggleFavorite(book: book)
         
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+    }
+    
+    // MARK: - Toggle Finished (FIXED)
+    private func toggleFinished() {
+        // Pass the book to CoreDataManager so it can create if needed
+        let newValue = CoreDataManager.shared.toggleFinished(bookId: book.id, book: book)
+        
+        // Update local state
+        isFinished = newValue
+        
         // Haptic feedback
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
+        
+        print("📚 Finished toggled: \(isFinished)")
     }
     
     // MARK: - Check Favorite Status
     private func checkFavoriteStatus() {
         isFavorite = CoreDataManager.shared.isFavorite(bookId: book.id)
     }
+    
+    // MARK: - Check Finished Status
+    private func checkFinishedStatus() {
+        isFinished = CoreDataManager.shared.isFinished(bookId: book.id)
+    }
+}
+
+// MARK: - Book Preview WebView
+struct BookPreviewWebView: View {
+    let book: Book
+    @Environment(\.dismiss) var dismiss
+    @State private var isLoading = true
+    
+    var body: some View {
+        NavigationView {
+            ZStack {
+                if let previewLink = book.volumeInfo.previewLink,
+                   let url = URL(string: previewLink) {
+                    WebView(url: url)
+                        .edgesIgnoringSafeArea(.bottom)
+                        .overlay(
+                            Group {
+                                if isLoading {
+                                    ProgressView()
+                                        .scaleEffect(1.5)
+                                }
+                            }
+                        )
+                        .onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                isLoading = false
+                            }
+                        }
+                } else {
+                    VStack(spacing: 20) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.system(size: 60))
+                            .foregroundColor(.gray)
+                        Text("Preview not available")
+                            .font(.headline)
+                    }
+                }
+            }
+            .navigationTitle(book.volumeInfo.title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Simple WebView
+struct WebView: UIViewRepresentable {
+    let url: URL
+    
+    func makeUIView(context: Context) -> WKWebView {
+        let webView = WKWebView()
+        webView.load(URLRequest(url: url))
+        return webView
+    }
+    
+    func updateUIView(_ webView: WKWebView, context: Context) {}
 }
