@@ -31,7 +31,7 @@ class BookViewModel: ObservableObject {
     let categories = [
         "All", "Fiction", "Non-Fiction", "Science", "Technology",
         "History", "Biography", "Fantasy", "Mystery", "Romance",
-        "Business", "Art", "Philosophy", "Religion", "Travel"
+        "Business", "Art", "Philosophy"
     ]
     
     // MARK: - Initialization
@@ -57,16 +57,20 @@ class BookViewModel: ObservableObject {
             apiCategory = "fiction" // Default category
         }
         
+        print("Fetching books for category: \(apiCategory)")
+        
         apiService.fetchBooks(category: apiCategory, maxResults: 30) { [weak self] result in
-            self?.isLoading = false
-            
-            switch result {
-            case .success(let books):
-                self?.books = books
-            case .failure(let error):
-                self?.errorMessage = error.localizedDescription
-                // Load from cache if API fails
-                self?.loadCachedBooks()
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                
+                switch result {
+                case .success(let books):
+                    print("Successfully fetched \(books.count) books")
+                    self?.books = books
+                case .failure(let error):
+                    print("Error fetching books: \(error.localizedDescription)")
+                    self?.errorMessage = error.localizedDescription
+                }
             }
         }
     }
@@ -81,22 +85,26 @@ class BookViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         
+        print("Searching books for query: \(query)")
+        
         apiService.searchBooks(query: query, maxResults: 20) { [weak self] result in
-            self?.isLoading = false
-            
-            switch result {
-            case .success(let books):
-                self?.searchResults = books
-            case .failure(let error):
-                self?.errorMessage = error.localizedDescription
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                
+                switch result {
+                case .success(let books):
+                    print("Successfully found \(books.count) books")
+                    self?.searchResults = books
+                case .failure(let error):
+                    print("Error searching books: \(error.localizedDescription)")
+                    self?.errorMessage = error.localizedDescription
+                }
             }
         }
     }
     
-    // MARK: - Load Cached Books (from Core Data)
+    // MARK: - Load Cached Books
     func loadCachedBooks() {
-        // This is for offline mode - will be implemented with Core Data
-        // For now, just show a message
         errorMessage = "Showing cached data (offline mode)"
     }
     
