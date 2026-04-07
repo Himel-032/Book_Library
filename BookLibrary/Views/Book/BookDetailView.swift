@@ -229,7 +229,7 @@ struct BookDetailView: View {
         }
     }
     
-    // MARK: - Book Thumbnail
+    //  Book Thumbnail
     @ViewBuilder
     private var bookThumbnail: some View {
         if let thumbnailUrl = book.volumeInfo.thumbnailUrl {
@@ -274,7 +274,7 @@ struct BookDetailView: View {
         }
     }
     
-    // MARK: - Info Row
+    //  Info Row
     private func infoRow(label: String, value: String) -> some View {
         HStack {
             Text(label + ":")
@@ -307,21 +307,21 @@ struct BookDetailView: View {
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
         
-        print("📚 Finished toggled: \(isFinished)")
+        print("Finished toggled: \(isFinished)")
     }
     
-    // MARK: - Check Favorite Status
+    // Check Favorite Status
     private func checkFavoriteStatus() {
         isFavorite = CoreDataManager.shared.isFavorite(bookId: book.id)
     }
     
-    // MARK: - Check Finished Status
+    // Check Finished Status
     private func checkFinishedStatus() {
         isFinished = CoreDataManager.shared.isFinished(bookId: book.id)
     }
 }
 
-// MARK: - Book Preview WebView
+//  Book Preview WebView
 struct BookPreviewWebView: View {
     let book: Book
     @Environment(\.dismiss) var dismiss
@@ -370,7 +370,7 @@ struct BookPreviewWebView: View {
     }
 }
 
-// MARK: - Simple WebView
+//  Simple WebView
 struct WebView: UIViewRepresentable {
     let url: URL
     
