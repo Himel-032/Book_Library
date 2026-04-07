@@ -11,7 +11,7 @@ import CoreData
 
 class BookViewModel: ObservableObject {
     
-    // MARK: - Published Properties
+    //  Published Properties
     @Published var books: [Book] = []
     @Published var searchResults: [Book] = []
     @Published var favoriteBooks: [BookEntity] = []
@@ -22,19 +22,19 @@ class BookViewModel: ObservableObject {
     
     @Published var selectedCategory = "All"
     
-    // MARK: - Private Properties
+    // Private Properties
     private let apiService = APIService.shared
     private var cancellables = Set<AnyCancellable>()
     private let coreDataManager = CoreDataManager.shared
     
-    // MARK: - Categories
+    //  Categories
     let categories = [
         "All", "Fiction", "Non-Fiction", "Science", "Technology",
         "History", "Biography", "Fantasy", "Mystery", "Romance",
         "Business", "Art", "Philosophy"
     ]
     
-    // MARK: - Initialization
+    //  Initialization
     init() {
         // Setup search debouncing
         $searchText
@@ -47,7 +47,7 @@ class BookViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    // MARK: - Fetch Books by Category
+    //  Fetch Books by Category
     func fetchBooks(category: String) {
         isLoading = true
         errorMessage = nil
@@ -75,7 +75,7 @@ class BookViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Search Books
+    //  Search Books
     func searchBooks(query: String) {
         guard !query.isEmpty else {
             searchResults = []
@@ -103,18 +103,18 @@ class BookViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Load Cached Books
+    //  Load Cached Books
     func loadCachedBooks() {
         errorMessage = "Showing cached data (offline mode)"
     }
     
-    // MARK: - Clear Search
+    //  Clear Search
     func clearSearch() {
         searchText = ""
         searchResults = []
     }
     
-    // MARK: - Get Books for Current View
+    //  Get Books for Current View
     func booksForCurrentMode(isSearching: Bool) -> [Book] {
         if isSearching && !searchText.isEmpty {
             return searchResults
