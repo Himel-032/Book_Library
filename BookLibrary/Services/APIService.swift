@@ -38,25 +38,25 @@ class APIService {
     
     static let shared = APIService()
     private let baseURL = "https://www.googleapis.com/books/v1/volumes"
-    private let apiKey = "AIzaSyC8KtJQufx1Bek0vRcbsjqHsJNYGkc3wo0"  // 👈 ADD YOUR KEY HERE
+    private let apiKey = "AIzaSyC8KtJQufx1Bek0vRcbsjqHsJNYGkc3wo0"  //  KEY 
     private let cache = NSCache<NSString, NSArray>()
     
     private init() {}
     
-    // MARK: - Fetch Books by Category
+    // Fetch Books by Category
     func fetchBooks(category: String, maxResults: Int = 20, completion: @escaping (Result<[Book], APIError>) -> Void) {
         
         let query = "subject:\(category)"
         fetchBooks(query: query, maxResults: maxResults, completion: completion)
     }
     
-    // MARK: - Search Books
+    //  Search Books
     func searchBooks(query: String, maxResults: Int = 20, completion: @escaping (Result<[Book], APIError>) -> Void) {
         
         fetchBooks(query: query, maxResults: maxResults, completion: completion)
     }
     
-    // MARK: - Fetch Books by Query (Private)
+    //  Fetch Books by Query (Private)
     private func fetchBooks(query: String, maxResults: Int, completion: @escaping (Result<[Book], APIError>) -> Void) {
         
         // Check cache first
@@ -73,7 +73,7 @@ class APIService {
             URLQueryItem(name: "maxResults", value: "\(maxResults)"),
             URLQueryItem(name: "printType", value: "books"),
             URLQueryItem(name: "orderBy", value: "relevance"),
-            URLQueryItem(name: "key", value: apiKey)  // 👈 ADD API KEY HERE
+            URLQueryItem(name: "key", value: apiKey)  // API KEY
         ]
         
         guard let url = components?.url else {
@@ -148,10 +148,10 @@ class APIService {
         }.resume()
     }
     
-    // MARK: - Fetch Book Details by ID
+    //  Fetch Book Details by ID
     func fetchBookDetails(bookId: String, completion: @escaping (Result<Book, APIError>) -> Void) {
         
-        let urlString = "\(baseURL)/\(bookId)?key=\(apiKey)"  // 👈 ADD API KEY HERE TOO
+        let urlString = "\(baseURL)/\(bookId)?key=\(apiKey)"  // API KEY 
         
         guard let url = URL(string: urlString) else {
             completion(.failure(.invalidURL))
@@ -187,7 +187,7 @@ class APIService {
         }.resume()
     }
     
-    // MARK: - Clear Cache
+    //  Clear Cache
     func clearCache() {
         cache.removeAllObjects()
     }
