@@ -341,7 +341,7 @@ struct SignupView: View {
             
             // Header
             VStack(spacing: 8) {
-                Image("book") // Your image asset name
+                Image("book") 
                     .resizable()
                     .scaledToFit()
                     .frame(width: 80, height: 100)

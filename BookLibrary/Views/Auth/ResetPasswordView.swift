@@ -107,8 +107,8 @@ struct ResetPasswordView: View {
                 
                 Spacer()
                 
-                // Logo / Icon (Professional Touch)
-                Image("book") // <-- Your image asset name
+                
+                Image("book") 
                        .resizable()
                        .scaledToFit()
                        .frame(width: 100, height: 100)

@@ -43,9 +43,9 @@ struct BookListView: View {
             }
         }
         .onAppear {
-            print("📚 BookListView appeared")
+            print("BookListView appeared")
             if bookViewModel.books.isEmpty {
-                print("📚 Fetching books for category: \(selectedCategory)")
+                print("Fetching books for category: \(selectedCategory)")
                 bookViewModel.fetchBooks(category: selectedCategory == "All" ? "fiction" : selectedCategory)
             }
         }
@@ -68,7 +68,7 @@ struct BookListView: View {
         }
     }
     
-    // MARK: - Loading View
+    //  Loading View
     private var loadingView: some View {
         VStack(spacing: 20) {
             ProgressView()
@@ -82,7 +82,7 @@ struct BookListView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
-    // MARK: - Search Bar
+    //  Search Bar
     private var searchBar: some View {
         HStack {
             Image(systemName: "magnifyingglass")
@@ -112,7 +112,7 @@ struct BookListView: View {
         .background(Color(.systemBackground))
     }
     
-    // MARK: - Category Picker
+    //  Category Picker
     private var categoryPicker: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
@@ -132,7 +132,7 @@ struct BookListView: View {
             isSearching = false
             bookViewModel.clearSearch()
             let apiCategory = category == "All" ? "fiction" : category
-            print("📚 Category selected: \(category), fetching: \(apiCategory)")
+            print("Category selected: \(category), fetching: \(apiCategory)")
             bookViewModel.fetchBooks(category: apiCategory)
         }) {
             Text(category)
@@ -146,7 +146,7 @@ struct BookListView: View {
         }
     }
     
-    // MARK: - Book List
+    //  Book List
     @ViewBuilder
     private var bookList: some View {
         let displayBooks = bookViewModel.booksForCurrentMode(isSearching: isSearching)
@@ -158,23 +158,23 @@ struct BookListView: View {
                 BookRowView(book: book, bookViewModel: bookViewModel)
                     .listRowInsets(EdgeInsets(top: 4, leading: 12, bottom: 4, trailing: 12))
                     .onTapGesture {
-                        print("📚 Book tapped: \(book.volumeInfo.title)")
+                        print("Book tapped: \(book.volumeInfo.title)")
                         selectedBook = book
-                        print("📚 selectedBook set to: \(selectedBook?.volumeInfo.title ?? "nil")")
+                        print("selectedBook set to: \(selectedBook?.volumeInfo.title ?? "nil")")
                         showDetail = true
-                        print("📚 showDetail set to: \(showDetail)")
+                        print("showDetail set to: \(showDetail)")
                     }
             }
             .listStyle(PlainListStyle())
             .refreshable {
                 let apiCategory = selectedCategory == "All" ? "fiction" : selectedCategory
-                print("📚 Refreshing with category: \(apiCategory)")
+                print("Refreshing with category: \(apiCategory)")
                 bookViewModel.fetchBooks(category: apiCategory)
             }
         }
     }
     
-    // MARK: - Empty State View
+    // Empty State View
     private var emptyStateView: some View {
         VStack(spacing: 20) {
             Image(systemName: isSearching ? "magnifyingglass" : "book.closed")

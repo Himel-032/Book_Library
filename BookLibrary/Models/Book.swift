@@ -5,14 +5,16 @@
 //  Created by macos on 25/2/26.
 //
 
+
+//  https://www.googleapis.com/books/v1/volumes?q=harry+potter
 import Foundation
 
-// MARK: - Google Books API Response
+//  Google Books API Response
 struct GoogleBooksResponse: Codable {
     let items: [Book]?
 }
 
-// MARK: - Book Model
+//  Book Model
 struct Book: Codable, Identifiable {
     let id: String
     let volumeInfo: VolumeInfo
@@ -45,7 +47,7 @@ struct Book: Codable, Identifiable {
     }
 }
 
-// MARK: - AccessInfo (Added for embed support)
+//  AccessInfo (Added for embed support)
 struct AccessInfo: Codable {
     let country: String?
     let viewability: String?
@@ -69,19 +71,19 @@ struct AccessInfo: Codable {
     }
 }
 
-// MARK: - Epub Info
+// Epub Info
 struct EpubInfo: Codable {
     let isAvailable: Bool?
     let acsTokenLink: String?
 }
 
-// MARK: - Pdf Info
+// Pdf Info
 struct PdfInfo: Codable {
     let isAvailable: Bool?
     let acsTokenLink: String?
 }
 
-// MARK: - VolumeInfo (Book Details) - Enhanced
+//  VolumeInfo (Book Details) - Enhanced
 struct VolumeInfo: Codable {
     let title: String
     let subtitle: String?
@@ -177,7 +179,7 @@ struct VolumeInfo: Codable {
     }
 }
 
-// MARK: - Image Links
+// Image Links
 struct ImageLinks: Codable {
     let smallThumbnail: String?
     let thumbnail: String?
@@ -196,7 +198,7 @@ struct ImageLinks: Codable {
     }
 }
 
-// MARK: - Book Extensions for UI
+//  Book Extensions for UI
 extension Book {
     var canBeRead: Bool {
         // Check if there's a preview link OR if it's embeddable
@@ -230,7 +232,7 @@ extension Book {
     }
 }
 
-// MARK: - Sample Books for Preview
+//  Sample Books for Preview
 extension Book {
     static var sampleBook: Book {
         let volumeInfo = VolumeInfo(

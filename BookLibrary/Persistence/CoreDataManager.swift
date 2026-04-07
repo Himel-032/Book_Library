@@ -17,19 +17,19 @@ class CoreDataManager {
     
     func setCurrentUser(userId: String) {
         self.currentUserId = userId
-        print("👤 CoreData user set to: \(userId)")
+        print("CoreData user set to: \(userId)")
     }
     
     func clearCurrentUser() {
         self.currentUserId = ""
-        print("👤 CoreData user cleared")
+        print("CoreData user cleared")
     }
     
     var isUserLoggedIn: Bool {
         return !currentUserId.isEmpty
     }
     
-    // MARK: - Persistent Container
+    //  Persistent Container
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "BookLibrary")
         container.loadPersistentStores { description, error in
@@ -40,7 +40,7 @@ class CoreDataManager {
         return container
     }()
     
-    // MARK: - Context
+    //  Context
     var viewContext: NSManagedObjectContext {
         return persistentContainer.viewContext
     }
@@ -51,13 +51,13 @@ class CoreDataManager {
     
     private init() {}
     
-    // MARK: - Save Context
+    //  Save Context
     func saveContext() {
         let context = persistentContainer.viewContext
         if context.hasChanges {
             do {
                 try context.save()
-                print("✅ Context saved successfully")
+                print("Context saved successfully")
                 NotificationCenter.default.post(name: NSNotification.Name("CoreDataDataChanged"), object: nil)
             } catch {
                 let nserror = error as NSError
@@ -66,7 +66,7 @@ class CoreDataManager {
         }
     }
     
-    // MARK: - User-Specific Predicates
+    //  User-Specific Predicates
     private func userPredicate() -> NSPredicate {
         return NSPredicate(format: "userId == %@", currentUserId)
     }
@@ -87,16 +87,16 @@ class CoreDataManager {
         return NSPredicate(format: "userId == %@ AND isFavorite == YES AND isFinished == NO", currentUserId)
     }
     
-    // MARK: - Validation
+    // Validation
     private func validateUser() -> Bool {
         guard !currentUserId.isEmpty else {
-            print("❌ No user logged in")
+            print("No user logged in")
             return false
         }
         return true
     }
     
-    // MARK: - Book Favorites (User-Specific)
+    //  Book Favorites (User-Specific)
     
     func saveFavorite(book: Book) {
         guard validateUser() else { return }
@@ -131,7 +131,7 @@ class CoreDataManager {
                 entity.dateAdded = Date()
                 
                 saveContext()
-                print("✅ Saved new favorite for user \(currentUserId): \(book.volumeInfo.title)")
+                print("Saved new favorite for user \(currentUserId): \(book.volumeInfo.title)")
             }
         } catch {
             print("Error saving favorite: \(error)")
@@ -156,7 +156,7 @@ class CoreDataManager {
                 }
             }
             saveContext()
-            print("✅ Removed favorite for user \(currentUserId)")
+            print("Removed favorite for user \(currentUserId)")
         } catch {
             print("Error removing favorite: \(error)")
         }
@@ -187,7 +187,7 @@ class CoreDataManager {
         
         do {
             let results = try viewContext.fetch(fetchRequest)
-            print("📚 Fetched \(results.count) favorites for user \(currentUserId)")
+            print("Fetched \(results.count) favorites for user \(currentUserId)")
             return results
         } catch {
             print("Error fetching favorites: \(error)")
@@ -220,7 +220,7 @@ class CoreDataManager {
                 // Book exists, just toggle finished
                 entity.isFinished.toggle()
                 saveContext()
-                print("✅ Toggled finished for user \(currentUserId): \(entity.title ?? ""), now: \(entity.isFinished)")
+                print("Toggled finished for user \(currentUserId): \(entity.title ?? ""), now: \(entity.isFinished)")
                 return entity.isFinished
             } else if let book = book {
                 // Book doesn't exist - create it with user ID
@@ -240,7 +240,7 @@ class CoreDataManager {
                 entity.dateAdded = Date()
                 
                 saveContext()
-                print("✅ Created new finished book for user \(currentUserId): \(entity.title ?? "")")
+                print("Created new finished book for user \(currentUserId): \(entity.title ?? "")")
                 return true
             }
         } catch {
@@ -350,7 +350,7 @@ class CoreDataManager {
         
         do {
             let books = try viewContext.fetch(fetchRequest)
-            print("📚 All books in Core Data (\(books.count)):")
+            print("All books in Core Data (\(books.count)):")
             for book in books {
                 print("   - User: \(book.userId ?? "nil"), \(book.title ?? "Unknown"): fav=\(book.isFavorite), fin=\(book.isFinished)")
             }
@@ -361,7 +361,7 @@ class CoreDataManager {
     
     func printCurrentUserBooks() {
         guard validateUser() else {
-            print("👤 No user logged in")
+            print("No user logged in")
             return
         }
         
@@ -370,7 +370,7 @@ class CoreDataManager {
         
         do {
             let books = try viewContext.fetch(fetchRequest)
-            print("📚 Books for user \(currentUserId) (\(books.count)):")
+            print("Books for user \(currentUserId) (\(books.count)):")
             for book in books {
                 print("   - \(book.title ?? "Unknown"): fav=\(book.isFavorite), fin=\(book.isFinished)")
             }

@@ -23,7 +23,7 @@ class AuthViewModel: ObservableObject {
         if let uid = user?.uid {
             // Set user in CoreData when app starts with logged in user
             CoreDataManager.shared.setCurrentUser(userId: uid)
-            print("🔐 CoreData user set on init: \(uid)")
+            print("CoreData user set on init: \(uid)")
             fetchProfile(uid: uid)
         }
     }
@@ -39,7 +39,7 @@ class AuthViewModel: ObservableObject {
                     
                     // Set user in CoreData on signup
                     CoreDataManager.shared.setCurrentUser(userId: user.uid)
-                    print("🔐 CoreData user set on signup: \(user.uid)")
+                    print("CoreData user set on signup: \(user.uid)")
                     
                     self.fetchProfile(uid: user.uid)
                 case .failure(let error):
@@ -60,7 +60,7 @@ class AuthViewModel: ObservableObject {
                     
                     // Set user in CoreData on login
                     CoreDataManager.shared.setCurrentUser(userId: user.uid)
-                    print("🔐 CoreData user set on login: \(user.uid)")
+                    print("CoreData user set on login: \(user.uid)")
                     
                     self.fetchProfile(uid: user.uid)
                 case .failure(let error):
@@ -93,7 +93,7 @@ class AuthViewModel: ObservableObject {
             
             // Clear user from CoreData on logout
             CoreDataManager.shared.clearCurrentUser()
-            print("🔐 CoreData user cleared on logout")
+            print("CoreData user cleared on logout")
             
             self.user = nil
             self.isAuthenticated = false

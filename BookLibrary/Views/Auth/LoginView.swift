@@ -70,7 +70,7 @@
 //
 //                // Header
 //                VStack(spacing: 8) {
-//                    Image("book") // <-- Your image asset name
+//                    Image("book") // 
 //                           .resizable()
 //                           .scaledToFit()
 //                           .frame(width: 100, height: 100)
@@ -178,7 +178,7 @@ struct LoginView: View {
                 
                 // Header
                 VStack(spacing: 8) {
-                    Image("book") // Your image asset name
+                    Image("book") 
                         .resizable()
                         .scaledToFit()
                         .frame(width: 100, height: 100)
@@ -278,7 +278,7 @@ struct LoginView: View {
             
             // Navigation to Home on success
             .navigationDestination(isPresented: $viewModel.isAuthenticated) {
-                HomeView(viewModel: viewModel)  // ✅ Pass the viewModel
+                HomeView(viewModel: viewModel)  // Pass the viewModel
             }
         }
     }
