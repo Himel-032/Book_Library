@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  BookLibrary
 //
-//  Created by macos on 24/2/26.
+//  Created by Himel on 23/2/26.
 //
 
 import SwiftUI
@@ -19,8 +19,6 @@ struct ContentView: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
+#Preview {
+    ContentView()
 }
