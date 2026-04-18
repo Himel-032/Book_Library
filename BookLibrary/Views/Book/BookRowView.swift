@@ -49,7 +49,7 @@ struct BookRowView: View {
                     // Favorite Button
                     Button(action: toggleFavorite) {
                         Image(systemName: isFavorite ? "heart.fill" : "heart")
-                            .foregroundColor(isFavorite ? .red : .gray)
+                            .foregroundColor(isFavorite ? Color(red: 0.95, green: 0.46, blue: 0.67) : .gray)
                             .font(.system(size: 16))
                     }
                     .buttonStyle(BorderlessButtonStyle())
